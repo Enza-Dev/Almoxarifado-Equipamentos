@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENZA</title>
+    <link rel="stylesheet" href="https://enza.com.br/sistema/jabuticabeiras/styles.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* AJUSTES PARA INTEGRAR NOSSO SISTEMA COM O CSS DA ENZA */
+        body { padding: 0; padding-top: 60px; /* Compensa a navbar */ }
+        
+        .main-wrapper { max-width: 1050px; margin: 20px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        h2 { color: #2c3e50; font-size: 1.5em; margin-bottom: 5px; text-transform: uppercase; border-bottom: 2px solid #3498db; padding-bottom: 5px; display: inline-block; }
+
+        /* Tabela principal com as cores da Enza */
+        .tabela-enza { width: 100%; border-collapse: collapse; border: 2px solid #2c3e50; margin-top: 20px; margin-bottom: 20px; }
+        .tabela-enza th { background-color: #ecf0f1; border: 1px solid #2c3e50; padding: 12px 10px; text-align: left; font-size: 0.85em; text-transform: uppercase; color: #2c3e50; }
+        .tabela-enza td { border: 1px solid #2c3e50; padding: 8px 10px; height: 35px; vertical-align: middle; color: #333; }
+        .tabela-enza tr:nth-child(even) { background-color: #f8f9fa; }
+        
+        /* Botões usando as cores extraídas do CSS da Enza */
+        .btn-blue { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-blue:hover { background-color: #2980b9; }
+        
+        .btn-save-list { background-color: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+        .btn-save-list:hover { background-color: #2ecc71; }
+        
+        .btn-pdf { background-color: #f39c12; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+        .btn-pdf:hover { background-color: #e67e22; }
+
+        .btn-add-line { background-color: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 10px; font-weight: bold; transition: 0.2s;}
+        .btn-add-line:hover { background-color: #34495e; }
+
+        .btn-remove-sm { background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 4px 10px; font-weight: bold; transition: 0.2s;}
+        .btn-remove-sm:hover { background: #c0392b; }
+        
+        .btn-remove { background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; padding: 8px 15px; font-weight: bold; transition: 0.2s;}
+        .btn-remove:hover { background: #c0392b; }
+
+        .footer-layout { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .data-verificacao-bar { background-color: #ecf0f1; padding: 12px 20px; border-radius: 4px; flex-grow: 1; margin-right: 20px; font-weight: bold; color: #2c3e50; font-size: 0.9em; border: 1px solid #bdc3c7;}
+
+        /* Modais */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(44, 62, 80, 0.9); z-index: 1050; }
+        .modal-content { background: white; width: 95%; max-width: 1200px; margin: 3% auto; padding: 25px; border-radius: 8px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);}
+        
+        #modalNovoMes .modal-content { max-width: 400px; margin: 15% auto; text-align: center; }
+        #modalAssinatura .modal-content { max-width: 600px; margin: 10% auto; text-align: center; }
+
+        .month-control-bar { background: #ecf0f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; border: 1px solid #bdc3c7; color: #2c3e50;}
+        .month-control-bar select { padding: 8px; font-size: 1em; font-weight: bold; border-radius: 4px; border: 1px solid #bdc3c7; width: 200px; color: #2c3e50; }
+
+        /* Estilo da FVS */
+        .fvs-header-table { width: 100%; border-collapse: collapse; border: 2px solid #333; margin-bottom: 0; }
+        .fvs-header-table td { border: 1px solid #333; padding: 5px 10px; vertical-align: middle; }
+        .fvs-title-cell { text-align: center; font-weight: bold; font-size: 1.2em; color: #2c3e50;}
+        .fvs-rev-cell { width: 150px; font-size: 0.85em; font-weight: bold; padding: 0 !important; color: #2c3e50;}
+        .fvs-rev-cell div { padding: 5px; border-bottom: 1px solid #333; }
+        .fvs-rev-cell div:last-child { border-bottom: none; }
+        
+        .fvs-info-row { border: 2px solid #333; border-top: none; padding: 6px 10px; font-weight: bold; font-size: 0.95em; color: #2c3e50;}
+        .fvs-info-row div { margin-bottom: 3px; }
+        .fvs-center-bar { text-align: center; font-weight: bold; background-color: #ecf0f1; border: 2px solid #333; border-top: none; padding: 6px; font-size: 0.95em; color: #2c3e50;}
+
+        .input-transp { border: none; background: transparent; font-family: inherit; font-size: inherit; font-weight: inherit; outline: none; border-bottom: 1px dashed #7f8c8d; width: auto; min-width: 100px; color: #2c3e50;}
+        .input-transp:focus { border-bottom: 1px solid #3498db; }
+
+        .hidden { display: none !important; }
+        input[type="text"].main-input, input[type="number"].main-input, select.main-select { width: 100%; border: 1px solid #bdc3c7; padding: 8px; box-sizing: border-box; border-radius: 4px; color: #2c3e50; font-weight: 500;}
+        input[type="text"].main-input:focus { border-color: #3498db; outline: none; }
+        .view-mode input.main-input, .view-mode select.main-select { border: none; background: transparent; pointer-events: none; -webkit-appearance: none; appearance: none; font-weight: bold; padding: 0; color: #333;}
+        
+        .fvs-table-data { width: 100%; border-collapse: collapse; border: 2px solid #333; border-top: none; }
+        .fvs-table-data th, .fvs-table-data td { border: 1px solid #333; padding: 8px; font-size: 0.85em; color: #2c3e50;}
+        .fvs-table-data th { background-color: #ecf0f1; text-align: center; font-weight: bold;}
+        .fvs-table-data td:nth-child(1), .fvs-table-data td:nth-child(2), .fvs-table-data td:nth-child(3) { text-align: left; }
+
+        /* Canvas de Assinatura */
+        #canvasAssinatura { border: 2px dashed #7f8c8d; background: #ecf0f1; border-radius: 8px; cursor: crosshair; touch-action: none; width: 100%; max-width: 500px; height: 200px; display: block; margin: 15px auto; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-visible">
+    <div class="nav-container">
+        <div class="nav-left">
+            <ul class="nav-menu mobile-show">
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-home"></i> Almoxarifado - EQUIPAMENTOS</a></li>
+            </ul>
+        </div>
+        <div class="user-section">
+            <span class="user-btn"> TI | ENZA Planejamento</span>
+        </div>
+    </div>
+</nav>
+
+<div class="logo logo-visible">
+    <img src="logo_enza.png" alt="Logo Enza">
+</div>
+
+<div class="main-wrapper">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
+        <div>
+            <h2>Gestão de Ferramentas</h2>
+            <p style="color: #7f8c8d; font-size: 0.9em;">Controle e Ficha de Verificação de Serviço</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button id="btnEdit" class="btn-blue" onclick="entrarModoEdicao()">Editar Ferramentas</button>
+            <button id="btnSave" class="btn-save-list hidden" onclick="salvarLista()">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <div id="areaControlesEdicao" class="hidden" style="margin-top: 15px;">
+        <button class="btn-add-line" onclick="adicionarNovaLinha()">+ Adicionar Linha</button>
+    </div>
+
+    <table class="tabela-enza" id="tabelaMain">
+        <thead>
+            <tr>
+                <th width="30%">EQUIPAMENTO</th>
+                <th width="20%">FABRICANTE</th>
+                <th width="25%">IDENTIFICAÇÃO / SÉRIE</th>
+                <th width="15%">STATUS</th>
+                <th width="10%" class="col-rem hidden">AÇÃO</th>
+            </tr>
+        </thead>
+        <tbody id="corpoTabela">
+            <tr class="view-mode">
+                <td><input type="text" class="main-input" value="SERRA CIRCULAR 1"></td>
+                <td><input type="text" class="main-input" value="MAKITA"></td>
+                <td><input type="text" class="main-input" value="185 MM 5007"></td>
+                <td><select class="main-select"><option value="FUNCIONAL">FUNCIONAL</option><option value="MANUTENÇÃO">MANUTENÇÃO</option></select></td>
+                <td class="col-rem hidden"><button class="btn-remove-sm" onclick="removerLinha(this)">X</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer-layout">
+        <div class="data-verificacao-bar">
+            DATA DA ÚLTIMA VERIFICAÇÃO: <span id="dataRodape" style="color: #3498db;">--/--/----</span>
+        </div>
+        <button class="btn-blue" onclick="abrirVerificacao()">Registrar Verificação Mensal</button>
+    </div>
+</div>
+
+<div id="modalFVS" class="modal">
+    <div class="modal-content">
+        
+        <div class="month-control-bar no-print">
+            <label>Histórico de Verificações:</label>
+            <select id="selectMesReferencia" onchange="carregarDadosDoMes()"></select>
+            <button class="btn-add-line" style="margin-bottom:0;" onclick="abrirModalNovoMes()">+ Criar Novo Mês</button>
+        </div>
+
+        <div id="pdfArea">
+            <table class="fvs-header-table">
+                <tr>
+                    <td width="150" style="text-align: center;"><img src="logo_enza.png" width="110"></td>
+                    <td class="fvs-title-cell">VERIFICAÇÃO PREVENTIVA / CORRETIVA</td>
+                    <td class="fvs-rev-cell">
+                        <div>Rev. <input type="text" class="input-transp" id="inputRev" value="06" style="width: 40px;"></div>
+                        <div>Data: <input type="text" class="input-transp" id="inputDataRev" value="02/MAR." style="width: 80px;"></div>
+                    </td>
+                </tr>
+            </table>
+            <div class="fvs-info-row">
+                <div>Obra: <input type="text" class="input-transp" id="inputObra" value="Palmeira Real" style="width: 300px;"></div>
+                <div>Data da Verificação: <input type="text" class="input-transp" id="inputDataVerif" value="" style="width: 150px;"></div>
+            </div>
+            <div class="fvs-center-bar">Verificação Preventiva</div>
+
+            <table class="fvs-table-data">
+                <thead>
+                    <tr>
+                        <th width="20%">Equipamento</th>
+                        <th width="15%">Fabricante / Série</th>
+                        <th width="35%">Verificação preventiva realizada</th>
+                        <th width="15%">Observação</th>
+                        <th width="15%">Responsável</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoFVS"></tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;" class="no-print">
+            <button onclick="fecharModal()" style="padding:10px 20px; cursor:pointer; margin-right: auto; background:#bdc3c7; border:none; border-radius:4px; font-weight:bold; color:#2c3e50;">Voltar</button>
+            <button class="btn-save-list" onclick="salvarRascunhoNoMes()">Salvar Rascunho</button>
+            <button class="btn-pdf" onclick="gerarPDF()">Gerar PDF</button>
+            <button class="btn-blue" onclick="finalizarRelatorio()">Finalizar Relatório</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalNovoMes" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top: 0; color: #2c3e50;">Criar Novo Período</h3>
+        <div style="display: flex; justify-content: center; gap: 15px; margin: 25px 0;">
+            <select id="novoMesPicker" class="main-select" style="width: 150px;">
+                <option value="JAN">JANEIRO</option><option value="FEV">FEVEREIRO</option>
+                <option value="MAR" selected>MARÇO</option><option value="ABR">ABRIL</option>
+                <option value="MAI">MAIO</option><option value="JUN">JUNHO</option>
+                <option value="JUL">JULHO</option><option value="AGO">AGOSTO</option>
+                <option value="SET">SETEMBRO</option><option value="OUT">OUTUBRO</option>
+                <option value="NOV">NOVEMBRO</option><option value="DEZ">DEZEMBRO</option>
+            </select>
+            <input type="number" id="novoAnoPicker" class="main-input" value="2026" style="width: 100px; text-align: center;">
+        </div>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button onclick="fecharModalNovoMes()" style="padding:10px 20px; cursor:pointer; border:1px solid #bdc3c7; border-radius:4px; background:#fff;">Cancelar</button>
+            <button class="btn-blue" onclick="confirmarNovoMes()">Criar Tabela</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalAssinatura" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-top: 0; color: #2c3e50;">Assinatura do Responsável</h3>
+        <p style="color: #7f8c8d; font-size: 0.9em; margin-bottom: 5px;">Assine no quadro abaixo usando o dedo ou o mouse:</p>
+        
+        <canvas id="canvasAssinatura" width="500" height="200"></canvas>
+        
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px;">
+            <button class="btn-remove" onclick="limparCanvasAssinatura()">🧹 Limpar Traço</button>
+            <button class="btn-save-list" onclick="salvarAssinatura()">✔ Confirmar Assinatura</button>
+            <button onclick="fecharModalAssinatura()" style="padding:10px 20px; cursor:pointer; border:1px solid #bdc3c7; border-radius:4px; background:#fff; font-weight:bold;">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- LÓGICA DA TELA PRINCIPAL ---
+    function entrarModoEdicao() {
+        document.getElementById('btnEdit').classList.add('hidden');
+        document.getElementById('btnSave').classList.remove('hidden');
+        document.getElementById('areaControlesEdicao').classList.remove('hidden');
+        document.querySelectorAll('.col-rem').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('#corpoTabela tr').forEach(tr => tr.classList.remove('view-mode'));
+    }
+
+    function salvarLista() {
+        document.getElementById('btnEdit').classList.remove('hidden');
+        document.getElementById('btnSave').classList.add('hidden');
+        document.getElementById('areaControlesEdicao').classList.add('hidden');
+        document.querySelectorAll('.col-rem').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('#corpoTabela tr').forEach(tr => tr.classList.add('view-mode'));
+    }
+
+    function adicionarNovaLinha() {
+        const tbody = document.getElementById('corpoTabela');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><input type="text" class="main-input" placeholder="Nome..."></td>
+            <td><input type="text" class="main-input" placeholder="Fabricante..."></td>
+            <td><input type="text" class="main-input" placeholder="Série..."></td>
+            <td><select class="main-select"><option value="FUNCIONAL">FUNCIONAL</option><option value="MANUTENÇÃO">MANUTENÇÃO</option></select></td>
+            <td class="col-rem"><button class="btn-remove-sm" onclick="removerLinha(this)">X</button></td>
+        `;
+    }
+    function removerLinha(btn) { if(confirm("Remover?")) btn.closest('tr').remove(); }
+
+
+    // --- LÓGICA DO HISTÓRICO MENSAL ---
+    function getDB() { return JSON.parse(localStorage.getItem('enza_fvs_history')) || {}; }
+    function saveDB(data) { localStorage.setItem('enza_fvs_history', JSON.stringify(data)); }
+
+    function abrirVerificacao() {
+        inicializarDropdownMeses();
+        document.getElementById('modalFVS').style.display = 'block';
+    }
+
+    function inicializarDropdownMeses() {
+        const db = getDB();
+        const select = document.getElementById('selectMesReferencia');
+        select.innerHTML = "";
+        const mesesSalvos = Object.keys(db).sort().reverse();
+
+        if(mesesSalvos.length === 0) {
+            select.innerHTML = `<option value="MAR/2026">MAR/2026</option>`;
+        } else {
+            mesesSalvos.forEach(mes => { select.innerHTML += `<option value="${mes}">${mes}</option>`; });
+        }
+        carregarDadosDoMes();
+    }
+
+    function abrirModalNovoMes() { document.getElementById('modalNovoMes').style.display = 'block'; }
+    function fecharModalNovoMes() { document.getElementById('modalNovoMes').style.display = 'none'; }
+
+    function confirmarNovoMes() {
+        const mesSelecionado = document.getElementById('novoMesPicker').value;
+        const anoSelecionado = document.getElementById('novoAnoPicker').value;
+        if(!anoSelecionado || anoSelecionado < 2000) return;
+
+        const novoPeriodo = `${mesSelecionado}/${anoSelecionado}`;
+        const select = document.getElementById('selectMesReferencia');
+        
+        let existe = false;
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].value === novoPeriodo) { existe = true; break; }
+        }
+
+        if(!existe) {
+            const opt = document.createElement('option');
+            opt.value = novoPeriodo;
+            opt.text = novoPeriodo;
+            select.add(opt, select[0]); 
+        }
+        select.value = novoPeriodo; 
+        carregarDadosDoMes(); 
+        fecharModalNovoMes();
+    }
+
+    function carregarDadosDoMes() {
+        const mesAtual = document.getElementById('selectMesReferencia').value;
+        const db = getDB();
+        const rascunho = db[mesAtual];
+        const corpoFVS = document.getElementById('corpoFVS');
+        corpoFVS.innerHTML = "";
+
+        if(rascunho) {
+            document.getElementById('inputRev').value = rascunho.cabecalho.rev;
+            document.getElementById('inputDataRev').value = rascunho.cabecalho.dataRev;
+            document.getElementById('inputObra').value = rascunho.cabecalho.obra;
+            document.getElementById('inputDataVerif').value = rascunho.cabecalho.dataVerif;
+
+            rascunho.ferramentas.forEach(f => {
+                corpoFVS.innerHTML += templateLinhaFVS(f.nome, f.fab, f.serie, f.c1, f.c2, f.c3, f.obs, f.assinatura);
+            });
+        } else {
+            const dataHoje = new Date();
+            document.getElementById('inputDataVerif').value = `${String(dataHoje.getDate()).padStart(2,'0')}/${String(dataHoje.getMonth()+1).padStart(2,'0')}/${String(dataHoje.getFullYear()).slice(-2)}`;
+            
+            document.querySelectorAll("#corpoTabela tr").forEach(row => {
+                const inputs = row.querySelectorAll('input.main-input');
+                if(inputs[0].value.trim() !== "") {
+                    corpoFVS.innerHTML += templateLinhaFVS(inputs[0].value, inputs[1].value, inputs[2].value, false, false, false, "", null);
+                }
+            });
+        }
+    }
+
+    function templateLinhaFVS(nome, fab, serie, c1, c2, c3, obs, assinaturaBase64) {
+        const imgStyle = assinaturaBase64 ? 'display:block;' : 'display:none;';
+        const btnStyle = assinaturaBase64 ? 'display:none;' : 'display:inline-block;';
+
+        return `
+            <tr class="fvs-row-item">
+                <td><strong class="fvs-nome">${nome}</strong><input type="hidden" class="fvs-fab" value="${fab}"><input type="hidden" class="fvs-serie" value="${serie}"></td>
+                <td>${fab}<br><small>${serie}</small></td>
+                <td>
+                    <label style="display:block; margin-bottom:3px; cursor:pointer;"><input type="checkbox" class="chk-1" ${c1 ? 'checked' : ''}> Ligue na tomada e teste</label>
+                    <label style="display:block; margin-bottom:3px; cursor:pointer;"><input type="checkbox" class="chk-2" ${c2 ? 'checked' : ''}> Limpeza desenergizado</label>
+                    <label style="display:block; cursor:pointer;"><input type="checkbox" class="chk-3" ${c3 ? 'checked' : ''}> Lubrificação desenergizado</label>
+                </td>
+                <td><textarea class="input-transp fvs-obs" style="width:100%; height:60px; resize:none;" placeholder="Anotações...">${obs}</textarea></td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn-blue no-print btn-assinar" style="padding: 6px 12px; font-size: 0.85em; margin:auto; background:#2c3e50; ${btnStyle}" onclick="abrirModalAssinatura(this)">🖊️ Assinar</button>
+                    <img class="img-assinatura" src="${assinaturaBase64 || ''}" style="max-width:120px; max-height:50px; cursor:pointer; margin:auto; border-radius:4px; ${imgStyle}" onclick="abrirModalAssinatura(this)" title="Clique para editar">
+                </td>
+            </tr>`;
+    }
+
+    // --- LÓGICA DA ASSINATURA (MODAL GRANDE) ---
+    let linhaAtivaParaAssinatura = null;
+    const canvas = document.getElementById('canvasAssinatura');
+    const ctx = canvas.getContext('2d');
+    let desenhando = false;
+
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#2c3e50'; 
+
+    function abrirModalAssinatura(elemento) {
+        linhaAtivaParaAssinatura = elemento.closest('tr');
+        limparCanvasAssinatura();
+        
+        // Puxa a assinatura existente e desenha no canvas, se houver
+        const img = linhaAtivaParaAssinatura.querySelector('.img-assinatura');
+        const imgSrc = img.getAttribute('src');
+        if (img.style.display !== 'none' && imgSrc && imgSrc.startsWith('data:image')) {
+            const imagemSalva = new Image();
+            imagemSalva.onload = () => ctx.drawImage(imagemSalva, 0, 0);
+            imagemSalva.src = imgSrc;
+        }
+
+        document.getElementById('modalAssinatura').style.display = 'block';
+    }
+
+    function fecharModalAssinatura() {
+        document.getElementById('modalAssinatura').style.display = 'none';
+        linhaAtivaParaAssinatura = null;
+    }
+
+    function limparCanvasAssinatura() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function salvarAssinatura() {
+        if(!linhaAtivaParaAssinatura) return;
+
+        const dataURL = canvas.toDataURL("image/png");
+        const btn = linhaAtivaParaAssinatura.querySelector('.btn-assinar');
+        const img = linhaAtivaParaAssinatura.querySelector('.img-assinatura');
+        
+        img.src = dataURL;
+        img.style.display = 'block';
+        btn.style.display = 'none'; 
+
+        fecharModalAssinatura();
+    }
+
+    function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+
+    function iniciarDesenho(e) {
+        e.preventDefault();
+        desenhando = true;
+        const pos = getMousePos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+    }
+
+    function desenhar(e) {
+        if (!desenhando) return;
+        e.preventDefault();
+        const pos = getMousePos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+    }
+
+    function pararDesenho(e) {
+        if(e) e.preventDefault();
+        desenhando = false;
+    }
+
+    canvas.addEventListener('mousedown', iniciarDesenho);
+    canvas.addEventListener('mousemove', desenhar);
+    canvas.addEventListener('mouseup', pararDesenho);
+    canvas.addEventListener('mouseout', pararDesenho);
+    canvas.addEventListener('touchstart', iniciarDesenho, { passive: false });
+    canvas.addEventListener('touchmove', desenhar, { passive: false });
+    canvas.addEventListener('touchend', pararDesenho, { passive: false });
+
+
+    // --- LÓGICA DE SALVAR E PDF ---
+    function salvarRascunhoNoMes(silencioso = false) {
+        const mesAtual = document.getElementById('selectMesReferencia').value;
+        const db = getDB();
+        const ferramentasSalvas = [];
+        
+        document.querySelectorAll(".fvs-row-item").forEach(row => {
+            const imgAssinatura = row.querySelector('.img-assinatura');
+            const base64 = imgAssinatura.style.display !== 'none' ? imgAssinatura.src : null;
+
+            ferramentasSalvas.push({
+                nome: row.querySelector('.fvs-nome').innerText,
+                fab: row.querySelector('.fvs-fab').value,
+                serie: row.querySelector('.fvs-serie').value,
+                c1: row.querySelector('.chk-1').checked,
+                c2: row.querySelector('.chk-2').checked,
+                c3: row.querySelector('.chk-3').checked,
+                obs: row.querySelector('.fvs-obs').value,
+                assinatura: base64
+            });
+        });
+
+        db[mesAtual] = {
+            cabecalho: {
+                rev: document.getElementById('inputRev').value,
+                dataRev: document.getElementById('inputDataRev').value,
+                obra: document.getElementById('inputObra').value,
+                dataVerif: document.getElementById('inputDataVerif').value
+            },
+            ferramentas: ferramentasSalvas
+        };
+
+        saveDB(db);
+        if(!silencioso) alert(`Rascunho do mês [${mesAtual}] salvo com sucesso!`);
+    }
+
+    function fecharModal() { document.getElementById('modalFVS').style.display = 'none'; }
+
+    function gerarPDF() {
+        const mesAtual = document.getElementById('selectMesReferencia').value;
+        const element = document.getElementById('pdfArea');
+        const opt = {
+            margin: 5,
+            filename: `FVS_ENZA_${mesAtual.replace('/','-')}.pdf`,
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        };
+        
+        document.querySelectorAll('.btn-assinar').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.input-transp').forEach(el => el.style.borderBottom = 'none');
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            document.querySelectorAll('.input-transp').forEach(el => el.style.borderBottom = '1px dashed #7f8c8d');
+            document.querySelectorAll('.btn-assinar').forEach(el => {
+                if(el.nextElementSibling.style.display === 'none') el.style.display = 'inline-block';
+            });
+        });
+    }
+
+    function finalizarRelatorio() {
+        salvarRascunhoNoMes(true); 
+        document.getElementById('dataRodape').innerText = document.getElementById('inputDataVerif').value;
+        fecharModal();
+        alert("Relatório finalizado! Assinaturas e histórico foram atualizados com sucesso.");
+    }
+</script>
+
+</body>
+</html>
