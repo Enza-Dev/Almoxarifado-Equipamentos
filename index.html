@@ -224,8 +224,8 @@
         <canvas id="canvasAssinatura" width="500" height="200"></canvas>
         
         <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px;">
-            <button class="btn-remove" onclick="limparCanvasAssinatura()">🧹 Limpar Traço</button>
-            <button class="btn-save-list" onclick="salvarAssinatura()">✔ Confirmar Assinatura</button>
+            <button class="btn-remove" onclick="limparCanvasAssinatura()">Limpar Traço</button>
+            <button class="btn-save-list" onclick="salvarAssinatura()">Confirmar Assinatura</button>
             <button onclick="fecharModalAssinatura()" style="padding:10px 20px; cursor:pointer; border:1px solid #bdc3c7; border-radius:4px; background:#fff; font-weight:bold;">Cancelar</button>
         </div>
     </div>
@@ -357,7 +357,7 @@
                 </td>
                 <td><textarea class="input-transp fvs-obs" style="width:100%; height:60px; resize:none;" placeholder="Anotações...">${obs}</textarea></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <button class="btn-blue no-print btn-assinar" style="padding: 6px 12px; font-size: 0.85em; margin:auto; background:#2c3e50; ${btnStyle}" onclick="abrirModalAssinatura(this)">🖊️ Assinar</button>
+                    <button class="btn-blue no-print btn-assinar" style="padding: 6px 12px; font-size: 0.85em; margin:auto; background:#2c3e50; ${btnStyle}" onclick="abrirModalAssinatura(this)"> Assinar</button>
                     <img class="img-assinatura" src="${assinaturaBase64 || ''}" style="max-width:120px; max-height:50px; cursor:pointer; margin:auto; border-radius:4px; ${imgStyle}" onclick="abrirModalAssinatura(this)" title="Clique para editar">
                 </td>
             </tr>`;
