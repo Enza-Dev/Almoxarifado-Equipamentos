@@ -92,7 +92,7 @@
 </nav>
 
 <div class="logo logo-visible">
-    <img src="https://enza.com.br/wp-content/uploads/2022/07/logo-enza.png" alt="Logo Enza">
+    <img src="logo_enza.png" alt="Logo Enza">
 </div>
 
 <div class="main-wrapper">
@@ -102,8 +102,8 @@
             <p style="color: #7f8c8d; font-size: 0.9em;">Controle e Ficha de Verificação de Serviço</p>
         </div>
         <div style="display: flex; gap: 10px;">
-            <button id="btnEdit" class="btn-blue" onclick="entrarModoEdicao()">⚙️ Editar Ferramentas</button>
-            <button id="btnSave" class="btn-save-list hidden" onclick="salvarLista()">💾 Salvar Alterações</button>
+            <button id="btnEdit" class="btn-blue" onclick="entrarModoEdicao()">Editar Ferramentas</button>
+            <button id="btnSave" class="btn-save-list hidden" onclick="salvarLista()">Salvar Alterações</button>
         </div>
     </div>
 
@@ -136,7 +136,7 @@
         <div class="data-verificacao-bar">
             DATA DA ÚLTIMA VERIFICAÇÃO: <span id="dataRodape" style="color: #3498db;">--/--/----</span>
         </div>
-        <button class="btn-blue" onclick="abrirVerificacao()">📝 Registrar Verificação Mensal</button>
+        <button class="btn-blue" onclick="abrirVerificacao()">Registrar Verificação Mensal</button>
     </div>
 </div>
 
@@ -153,7 +153,7 @@
         <div id="pdfArea">
             <table class="fvs-header-table">
                 <tr>
-                    <td width="150" style="text-align: center;"><img src="https://enza.com.br/wp-content/uploads/2022/07/logo-enza.png" width="110"></td>
+                    <td width="150" style="text-align: center;"><img src="logo_enza.png" width="110"></td>
                     <td class="fvs-title-cell">VERIFICAÇÃO PREVENTIVA / CORRETIVA</td>
                     <td class="fvs-rev-cell">
                         <div>Rev. 06</div>
@@ -181,7 +181,7 @@
 
             <div class="fvs-footer-assinatura">
                 <p style="font-weight: bold; margin-bottom: 10px; color: #2c3e50;">Responsável pela Verificação</p>
-                <button class="btn-blue no-print" id="btnAssinarDoc" onclick="abrirModalAssinatura()" style="background-color: #2c3e50;">🖊️ Assinar Relatório</button>
+                <button class="btn-blue no-print" id="btnAssinarDoc" onclick="abrirModalAssinatura()" style="background-color: #2c3e50;">Assinar Relatório</button>
                 <div style="min-height: 80px; display: flex; justify-content: center; align-items: center; margin-top: 10px;">
                     <img id="imgAssinaturaGlobal" src="" style="display:none; max-width:250px; max-height:80px; cursor:pointer;" onclick="abrirModalAssinatura()" title="Clique para refazer">
                 </div>
@@ -191,8 +191,8 @@
 
         <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;" class="no-print">
             <button onclick="fecharModal()" style="padding:10px 20px; cursor:pointer; margin-right: auto; background:#bdc3c7; border:none; border-radius:4px; font-weight:bold; color:#2c3e50;">Voltar</button>
-            <button class="btn-save-list" id="btnSalvarRascunho" onclick="salvarRascunhoNoMes()">💾 Salvar Rascunho</button>
-            <button class="btn-blue" id="btnFinalizar" onclick="finalizarRelatorio()">✅ Finalizar e Gerar PDF</button>
+            <button class="btn-save-list" id="btnSalvarRascunho" onclick="salvarRascunhoNoMes()">Salvar Rascunho</button>
+            <button class="btn-blue" id="btnFinalizar" onclick="finalizarRelatorio()">Finalizar e Gerar PDF</button>
         </div>
     </div>
 </div>
@@ -226,8 +226,8 @@
         <canvas id="canvasAssinatura" width="500" height="200"></canvas>
         
         <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px;">
-            <button class="btn-remove-sm" style="padding: 10px 20px;" onclick="limparCanvasAssinatura()">🧹 Limpar Traço</button>
-            <button class="btn-save-list" onclick="salvarAssinatura()">✔ Confirmar Assinatura</button>
+            <button class="btn-remove-sm" style="padding: 10px 20px;" onclick="limparCanvasAssinatura()">Limpar Traço</button>
+            <button class="btn-save-list" onclick="salvarAssinatura()">Confirmar Assinatura</button>
             <button onclick="fecharModalAssinatura()" style="padding:10px 20px; cursor:pointer; border:1px solid #bdc3c7; border-radius:4px; background:#fff; font-weight:bold;">Cancelar</button>
         </div>
     </div>
