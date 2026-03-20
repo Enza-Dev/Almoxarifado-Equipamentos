@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA FVS - ENZA</title>
+    <title>SISTEMA ENZA</title>
     <link rel="stylesheet" href="https://enza.com.br/sistema/jabuticabeiras/styles.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* AJUSTES PARA INTEGRAR NOSSO SISTEMA COM O CSS DA ENZA */
         body { padding: 0; padding-top: 60px; }
         
         .main-wrapper { max-width: 1050px; margin: 20px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -35,7 +34,6 @@
         .footer-layout { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .data-verificacao-bar { background-color: #ecf0f1; padding: 12px 20px; border-radius: 4px; flex-grow: 1; margin-right: 20px; font-weight: bold; color: #2c3e50; font-size: 0.9em; border: 1px solid #bdc3c7;}
 
-        /* Modais */
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(44, 62, 80, 0.9); z-index: 1050; }
         .modal-content { background: white; width: 95%; max-width: 1200px; margin: 3% auto; padding: 25px; border-radius: 8px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);}
         
@@ -45,7 +43,7 @@
         .month-control-bar { background: #ecf0f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; border: 1px solid #bdc3c7; color: #2c3e50;}
         .month-control-bar select { padding: 8px; font-size: 1em; font-weight: bold; border-radius: 4px; border: 1px solid #bdc3c7; width: 200px; color: #2c3e50; }
 
-        /* Estilo da FVS */
+        /* FVS Styles */
         .fvs-header-table { width: 100%; border-collapse: collapse; border: 2px solid #333; margin-bottom: 0; }
         .fvs-header-table td { border: 1px solid #333; padding: 5px 10px; vertical-align: middle; }
         .fvs-title-cell { text-align: center; font-weight: bold; font-size: 1.2em; color: #2c3e50;}
@@ -59,7 +57,7 @@
 
         .input-transp { border: none; background: transparent; font-family: inherit; font-size: inherit; font-weight: inherit; outline: none; border-bottom: 1px dashed #7f8c8d; width: auto; min-width: 100px; color: #2c3e50;}
         .input-transp:focus { border-bottom: 1px solid #3498db; }
-        .input-locked { border-bottom: none !important; pointer-events: none; } /* Classe para travar edição */
+        .input-locked { border-bottom: none !important; pointer-events: none; } 
 
         .hidden { display: none !important; }
         input[type="text"].main-input, input[type="number"].main-input, select.main-select { width: 100%; border: 1px solid #bdc3c7; padding: 8px; box-sizing: border-box; border-radius: 4px; color: #2c3e50; font-weight: 500;}
@@ -70,9 +68,8 @@
         .fvs-table-data th, .fvs-table-data td { border: 1px solid #333; padding: 8px; font-size: 0.85em; color: #2c3e50;}
         .fvs-table-data th { background-color: #ecf0f1; text-align: center; font-weight: bold;}
 
-        /* Canvas de Assinatura */
+        /* Canvas */
         #canvasAssinatura { border: 2px dashed #7f8c8d; background: #ecf0f1; border-radius: 8px; cursor: crosshair; touch-action: none; width: 100%; max-width: 500px; height: 200px; display: block; margin: 15px auto; }
-        
         .fvs-footer-assinatura { text-align: center; margin-top: 30px; border-top: 2px solid #333; padding-top: 20px; page-break-inside: avoid; }
     </style>
 </head>
@@ -82,7 +79,7 @@
     <div class="nav-container">
         <div class="nav-left">
             <ul class="nav-menu mobile-show">
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-home"></i> SISTEMA FVS - EQUIPAMENTOS</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-home"></i>EQUIPAMENTOS</a></li>
             </ul>
         </div>
         <div class="user-section">
@@ -164,8 +161,8 @@
                 <div>Obra: <input type="text" class="input-transp" id="inputObra" value="Palmeira Real" style="width: 300px;"></div>
                 <div>Data da Verificação: <input type="text" class="input-transp" id="inputDataVerif" value="" style="width: 150px;"></div>
             </div>
+            
             <div class="fvs-center-bar">Verificação Preventiva</div>
-
             <table class="fvs-table-data">
                 <thead>
                     <tr>
@@ -176,6 +173,20 @@
                     </tr>
                 </thead>
                 <tbody id="corpoFVS"></tbody>
+            </table>
+
+            <div class="fvs-center-bar" style="margin-top: 15px;">Verificação Corretiva</div>
+            <table class="fvs-table-data" style="border-top: none;">
+                <thead>
+                    <tr>
+                        <th width="25%">Equipamento</th>
+                        <th width="20%">Fabricante</th>
+                        <th width="20%">Identificação ou Nº de série</th>
+                        <th width="35%">Verificação corretiva realizada</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoCorretiva">
+                    </tbody>
             </table>
 
             <div class="fvs-footer-assinatura">
@@ -233,7 +244,6 @@
 </div>
 
 <script>
-    // --- LÓGICA DA TELA PRINCIPAL ---
     function entrarModoEdicao() {
         document.getElementById('btnEdit').classList.add('hidden');
         document.getElementById('btnSave').classList.remove('hidden');
@@ -264,7 +274,6 @@
     function removerLinha(btn) { if(confirm("Remover?")) btn.closest('tr').remove(); }
 
 
-    // --- LÓGICA DO HISTÓRICO MENSAL ---
     function getDB() { return JSON.parse(localStorage.getItem('enza_fvs_history')) || {}; }
     function saveDB(data) { localStorage.setItem('enza_fvs_history', JSON.stringify(data)); }
 
@@ -318,10 +327,12 @@
         const mesAtual = document.getElementById('selectMesReferencia').value;
         const db = getDB();
         const rascunho = db[mesAtual];
-        const corpoFVS = document.getElementById('corpoFVS');
-        corpoFVS.innerHTML = "";
         
-        // Reset da assinatura global
+        const corpoFVS = document.getElementById('corpoFVS');
+        const corpoCorretiva = document.getElementById('corpoCorretiva');
+        corpoFVS.innerHTML = "";
+        corpoCorretiva.innerHTML = "";
+        
         const imgSig = document.getElementById('imgAssinaturaGlobal');
         const btnSig = document.getElementById('btnAssinarDoc');
         imgSig.style.display = 'none';
@@ -332,9 +343,19 @@
             document.getElementById('inputObra').value = rascunho.cabecalho.obra;
             document.getElementById('inputDataVerif').value = rascunho.cabecalho.dataVerif;
 
+            // Carrega Preventiva
             rascunho.ferramentas.forEach(f => {
                 corpoFVS.innerHTML += templateLinhaFVS(f.nome, f.fab, f.serie, f.c1, f.c2, f.c3, f.obs);
             });
+            
+            // Carrega Corretiva
+            if(rascunho.corretivas) {
+                rascunho.corretivas.forEach(c => {
+                    corpoCorretiva.innerHTML += templateLinhaCorretiva(c.equip, c.fab, c.serie, c.acao);
+                });
+            } else {
+                for(let i=0; i<5; i++) corpoCorretiva.innerHTML += templateLinhaCorretiva('','','','');
+            }
             
             if(rascunho.assinaturaGeral) {
                 imgSig.src = rascunho.assinaturaGeral;
@@ -342,24 +363,24 @@
                 btnSig.style.display = 'none';
             }
             
-            // TRAVA A EDIÇÃO SE ESTIVER FINALIZADO
-            if(rascunho.finalizado) {
-                travarEdicao(true);
-            } else {
-                travarEdicao(false);
-            }
+            if(rascunho.finalizado) travarEdicao(true);
+            else travarEdicao(false);
 
         } else {
-            travarEdicao(false); // Garante que novo mês vem destravado
+            travarEdicao(false); 
             const dataHoje = new Date();
             document.getElementById('inputDataVerif').value = `${String(dataHoje.getDate()).padStart(2,'0')}/${String(dataHoje.getMonth()+1).padStart(2,'0')}/${String(dataHoje.getFullYear()).slice(-2)}`;
             
+            // Linhas Preventiva em branco baseadas na tabela principal
             document.querySelectorAll("#corpoTabela tr").forEach(row => {
                 const inputs = row.querySelectorAll('input.main-input');
                 if(inputs[0].value.trim() !== "") {
                     corpoFVS.innerHTML += templateLinhaFVS(inputs[0].value, inputs[1].value, inputs[2].value, false, false, false, "");
                 }
             });
+
+            // 5 Linhas Corretivas em branco
+            for(let i=0; i<5; i++) corpoCorretiva.innerHTML += templateLinhaCorretiva('','','','');
         }
     }
 
@@ -377,45 +398,46 @@
             </tr>`;
     }
 
-    // --- FUNÇÕES DE TRAVAMENTO DE EDIÇÃO ---
+    function templateLinhaCorretiva(equip, fab, serie, acao) {
+        return `
+            <tr>
+                <td><input type="text" class="input-transp" style="width:100%;" value="${equip}"></td>
+                <td><input type="text" class="input-transp" style="width:100%;" value="${fab}"></td>
+                <td><input type="text" class="input-transp" style="width:100%;" value="${serie}"></td>
+                <td><textarea class="input-transp fvs-obs" style="width:100%; height:40px; resize:none;" placeholder="Descreva o que foi consertado">${acao}</textarea></td>
+            </tr>`;
+    }
+
     function travarEdicao(travar) {
         const badge = document.getElementById('badgeFinalizado');
         const btnSalvar = document.getElementById('btnSalvarRascunho');
         const btnFinalizar = document.getElementById('btnFinalizar');
         const btnAssinar = document.getElementById('btnAssinarDoc');
         
-        // Inputs de cabeçalho
-        document.getElementById('inputObra').classList.toggle('input-locked', travar);
-        document.getElementById('inputDataVerif').classList.toggle('input-locked', travar);
-        
-        // Textareas
-        document.querySelectorAll('.fvs-obs').forEach(ta => {
-            ta.classList.toggle('input-locked', travar);
-            ta.readOnly = travar;
+        document.querySelectorAll('.input-transp').forEach(input => {
+            input.classList.toggle('input-locked', travar);
+            input.readOnly = travar;
         });
         
-        // Checkboxes
         document.querySelectorAll('.chk-item').forEach(cb => cb.disabled = travar);
         
         if(travar) {
             badge.style.display = 'inline-block';
             btnSalvar.style.display = 'none';
-            btnFinalizar.style.display = 'none'; // Se já finalizou, não precisa clicar de novo
+            btnFinalizar.style.display = 'none'; 
             btnAssinar.style.display = 'none';
-            document.getElementById('imgAssinaturaGlobal').style.pointerEvents = 'none'; // Impede re-abrir modal
+            document.getElementById('imgAssinaturaGlobal').style.pointerEvents = 'none'; 
         } else {
             badge.style.display = 'none';
             btnSalvar.style.display = 'inline-block';
             btnFinalizar.style.display = 'inline-block';
             document.getElementById('imgAssinaturaGlobal').style.pointerEvents = 'auto';
-            // Só mostra o botão assinar se a imagem estiver oculta
             if(document.getElementById('imgAssinaturaGlobal').style.display === 'none') {
                 btnAssinar.style.display = 'inline-block';
             }
         }
     }
 
-    // --- LÓGICA DA ASSINATURA GLOBAL ---
     const canvas = document.getElementById('canvasAssinatura');
     const ctx = canvas.getContext('2d');
     let desenhando = false;
@@ -426,7 +448,6 @@
 
     function abrirModalAssinatura() {
         limparCanvasAssinatura();
-        
         const img = document.getElementById('imgAssinaturaGlobal');
         const imgSrc = img.getAttribute('src');
         if (img.style.display !== 'none' && imgSrc && imgSrc.startsWith('data:image')) {
@@ -445,11 +466,9 @@
         const btn = document.getElementById('btnAssinarDoc');
         const img = document.getElementById('imgAssinaturaGlobal');
         
-        // Verifica se realmente desenhou algo (opcional, mas previne salvar em branco)
         img.src = dataURL;
         img.style.display = 'block';
         btn.style.display = 'none'; 
-
         fecharModalAssinatura();
     }
 
@@ -487,12 +506,11 @@
     canvas.addEventListener('touchend', pararDesenho, { passive: false });
 
 
-    // --- LÓGICA DE SALVAR E PDF ---
     function salvarRascunhoNoMes(silencioso = false, finalizado = false) {
         const mesAtual = document.getElementById('selectMesReferencia').value;
         const db = getDB();
-        const ferramentasSalvas = [];
         
+        const ferramentasSalvas = [];
         document.querySelectorAll(".fvs-row-item").forEach(row => {
             const checkboxes = row.querySelectorAll('.chk-item');
             ferramentasSalvas.push({
@@ -506,6 +524,17 @@
             });
         });
 
+        const corretivasSalvas = [];
+        document.querySelectorAll("#corpoCorretiva tr").forEach(row => {
+            const inputs = row.querySelectorAll('.input-transp');
+            corretivasSalvas.push({
+                equip: inputs[0].value,
+                fab: inputs[1].value,
+                serie: inputs[2].value,
+                acao: inputs[3].value
+            });
+        });
+
         const imgSig = document.getElementById('imgAssinaturaGlobal');
         const base64Sig = imgSig.style.display !== 'none' ? imgSig.src : null;
 
@@ -516,7 +545,8 @@
                 dataVerif: document.getElementById('inputDataVerif').value
             },
             assinaturaGeral: base64Sig,
-            ferramentas: ferramentasSalvas
+            ferramentas: ferramentasSalvas,
+            corretivas: corretivasSalvas
         };
 
         saveDB(db);
@@ -530,10 +560,7 @@
         
         if(!confirm(`Tem certeza que deseja FINALIZAR o mês de ${mesAtual}? Isso travará a edição do documento.`)) return;
 
-        // Salva com a flag finalizado = true
         salvarRascunhoNoMes(true, true); 
-        
-        // Trava visualmente para o PDF sair sem as bordas
         travarEdicao(true);
         document.querySelectorAll('.input-transp').forEach(el => el.classList.add('input-locked'));
 
